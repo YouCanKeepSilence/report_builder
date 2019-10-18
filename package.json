@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "axios": "^0.19.0",
     "core-js": "^3.1.2",
     "vue": "^2.6.10",
     "vue-router": "^3.0.6",
@@ -41,7 +42,9 @@
       "plugin:vue/essential",
       "@vue/standard"
     ],
-    "rules": {},
+    "rules": {
+      "semi": "off"
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }
