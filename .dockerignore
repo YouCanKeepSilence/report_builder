@@ -1,0 +1,19 @@
+*/node_modules
+*/.git
+*/.gitignore
+*/dist
+# /tempo-proxy/node_modules
+# /report-builder/node_modules
+#/tempo-proxy/dist
+#/report-builder/dist
+npm-debug.log
+Dockerfile*
+docker-compose*
+.dockerignore
+#/tempo-proxy/.git
+#/tempo-proxy/.gitignore
+#/report-builder/.git
+#/report-builder/.gitignore
+README.md
+LICENSE
+.vscode
