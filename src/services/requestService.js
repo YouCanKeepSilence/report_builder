@@ -2,7 +2,7 @@ import Config from './config';
 import axios from 'axios';
 
 export class RequestService {
-  static prepareTempoUrl (endfix) {
+  static prepareProxyUrl (endfix) {
     return `${Config.proxyAddress}${endfix}`;
   }
 
@@ -10,10 +10,28 @@ export class RequestService {
     return `${Config.jiraUrlPrefix}${endfix}`;
   }
 
-  static async getWorklog (tempoToken, dateFrom, dateTo, limit = 1000, offset = 0) {
-    axios.defaults.headers.common['authorization'] = `Bearer ${tempoToken}`;
+  static async getIssue (issueKey, login, password) {
+    const url = RequestService.prepareProxyUrl(`/issue/${issueKey}`);
+    const result = await axios.get(url, {
+      auth: {
+        username: login,
+        password: password
+      }
+    });
+    const body = result.data
+    const issue = {
+      key: body.key,
+      name: body.fields.summary,
+      epic: null
+    };
+    if (body.fields.customfield_10008 != null) {
+      issue.epic = await RequestService.getIssue(body.fields.customfield_10008, login, password);
+    }
+    return issue
+  }
 
-    const url = RequestService.prepareTempoUrl('/worklog');
+  static async getWorklog (tempoToken, dateFrom, dateTo, limit = 1000, offset = 0) {
+    const url = RequestService.prepareProxyUrl('/worklog');
     const result = await axios.get(url, {
       params: {
         from: dateFrom,
@@ -22,7 +40,28 @@ export class RequestService {
         offset: offset,
         token: tempoToken
       }
-    })
-    console.log(result.data);
+    });
+
+    const response = result.data;
+    response.metadata = {
+      ...response.metadata,
+      from: dateFrom,
+      to: dateTo
+    }
+
+    const mappedWorklog = { 'metadata': response.metadata, 'issues': {} };
+    response.results.forEach((x) => {
+      const { key, self: link } = x.issue;
+      const secondsSpent = x.timeSpentSeconds;
+      if (mappedWorklog.issues.hasOwnProperty(key)) {
+        mappedWorklog.issues[key].duration += secondsSpent;
+      } else {
+        mappedWorklog.issues[key] = {
+          link,
+          duration: secondsSpent
+        }
+      }
+    });
+    return mappedWorklog;
   }
 }
