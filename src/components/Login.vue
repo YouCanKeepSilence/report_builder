@@ -10,7 +10,7 @@
         lazy-validation
       >
         <v-text-field label="Логин Jira" v-model="login" required :rules="[nonEmptyRule, emailRegexRule]"></v-text-field>
-        <v-text-field label="Токен Jira" type="password" v-model="tokenJira" required :rules="[nonEmptyRule]"></v-text-field>
+        <v-text-field label="Пароль Jira" type="password" v-model="passwordJira" required :rules="[nonEmptyRule]"></v-text-field>
         <v-text-field label="Токен Tempo" type="password" v-model="tokenTempo" required :rules="[nonEmptyRule]"></v-text-field>
         <v-date-picker full-width v-model="dateRange" locale="ru" first-day-of-week="1" range></v-date-picker>
         {{dateRange}}
@@ -36,7 +36,7 @@ export default {
   name: 'Login',
   data: () => ({
     login: '',
-    tokenJira: '',
+    passwordJira: '',
     tokenTempo: '',
     dateRange: [],
     nonEmptyRule: v => !!v || 'Необходимо заполнить поле',
