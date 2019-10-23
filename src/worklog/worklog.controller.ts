@@ -7,7 +7,7 @@ export class WorklogController {
 
   @Get()
   async getWorklog(@Query() query: any): Promise<object> {
-    const {from, to, token} = query;
-    return this.worklogService.getWorklog(from, to, token);
+    const {from, to, token, limit, offset} = query;
+    return this.worklogService.getWorklog(from, to, token, limit || 1000, offset || 0);
   }
 }

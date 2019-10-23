@@ -4,13 +4,14 @@ import { HttpService, Injectable } from '@nestjs/common';
 export class WorklogService {
   constructor(private readonly httpService: HttpService) {}
 
-  async getWorklog(from, to, token) {
+  async getWorklog(from, to, token, limit, offset) {
     const url = 'https://api.tempo.io/core/3/worklogs';
     const config = {
       params: {
         from,
         to,
-        limit: 1000
+        limit,
+        offset
       },
       headers: {
         Authorization: `Bearer ${token}`
