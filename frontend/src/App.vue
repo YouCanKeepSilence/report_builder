@@ -13,16 +13,6 @@
         <span class="mr-2">Home</span>
       </v-btn>
     </v-app-bar>
-    <v-snackbar v-model="snackbar" top multi-line :color="snackbarColor">
-      {{ snackbarMessage }}
-      <v-btn
-        dark
-        text
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
-    </v-snackbar>
     <v-content container-fluid>
       <router-view/>
     </v-content>
@@ -32,10 +22,6 @@
 <script>
 export default {
   name: 'App',
-  data: () => ({
-    snackbar: true,
-    snackbarMessage: 'Я вас категорически приветствую',
-    snackbarColor: 'success'
-  })
+  data: () => ({})
 }
 </script>
