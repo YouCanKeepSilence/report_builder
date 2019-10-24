@@ -47,7 +47,7 @@ export class RequestService {
       ...response.metadata,
       from: dateFrom,
       to: dateTo
-    }
+    };
 
     const mappedWorklog = { 'metadata': response.metadata, 'issues': {} };
     response.results.forEach((x) => {
