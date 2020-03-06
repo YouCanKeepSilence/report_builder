@@ -1,11 +1,15 @@
 import { HttpService, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WorklogService {
-  constructor(private readonly httpService: HttpService) {}
+  private readonly tempoUrl;
+  constructor(private readonly httpService: HttpService, private readonly configService: ConfigService) {
+    this.tempoUrl = this.configService.get<string>('tempo_url');
+  }
 
   async getWorklog(from, to, token, limit, offset) {
-    const url = 'https://api.tempo.io/core/3/worklogs';
+    const url = `${this.tempoUrl}/worklogs`;
     const config = {
       params: {
         from,

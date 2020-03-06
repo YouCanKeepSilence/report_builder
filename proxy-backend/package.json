@@ -1,7 +1,7 @@
 {
   "name": "tempo-proxy",
   "version": "0.1.1",
-  "description": "Simple nodejs proxy for building reports",
+  "description": "Simple nodejs proxy for building reports. Now it also provide kaiten scheduler",
   "author": "Silence",
   "license": "MIT",
   "scripts": {
@@ -20,15 +20,19 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^6.7.2",
-    "@nestjs/core": "^6.7.2",
+    "@nestjs/common": "^6.11.11",
+    "@nestjs/config": "^0.2.4",
+    "@nestjs/core": "^6.11.11",
     "@nestjs/platform-express": "^6.7.2",
+    "@nestjs/schedule": "^0.2.0",
+    "@nestjs/swagger": "^4.0.9",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
-    "rxjs": "^6.5.3"
+    "rxjs": "^6.5.3",
+    "swagger-ui-express": "^4.1.2"
   },
   "devDependencies": {
-    "@nestjs/cli": "^6.9.0",
+    "@nestjs/cli": "^6.14.2",
     "@nestjs/schematics": "^6.7.0",
     "@nestjs/testing": "^6.7.1",
     "@types/express": "^4.17.1",
