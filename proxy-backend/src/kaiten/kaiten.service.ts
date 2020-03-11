@@ -2,6 +2,8 @@ import { HttpService, Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
 
+const pollIntervalSecs = 60 * 10;
+
 @Injectable()
 export class KaitenService {
   private readonly logger = new Logger(KaitenService.name);
@@ -17,8 +19,7 @@ export class KaitenService {
   private readonly lanesIds;
   private readonly memberIds;
   private readonly kaitenToken;
-  private readonly pollInterval;
-  private lastCheckDate = new Date();
+  // private lastCheckDate = new Date();
 
   constructor(private readonly configService: ConfigService, private readonly httpService: HttpService) {
     this.kaitenUrl = this.configService.get<string>('kaiten_url');
@@ -27,12 +28,11 @@ export class KaitenService {
     this.kaitenToken = this.configService.get<string>('kaiten_token');
     this.memberIds = JSON.parse(this.configService.get<string>('kaiten_member_ids'));
     this.lanesIds = JSON.parse(this.configService.get<string>('kaiten_lanes_ids'));
-    this.pollInterval = this.configService.get<number>('kaiten_poll_interval_ms');
   }
 
-  @Interval(this.pollInterval)
+  @Interval(pollIntervalSecs * 1000)
   async handleNewCards() {
-    this.logger.debug('Check new cards. Now is ' + this.lastCheckDate.toISOString());
+    this.logger.debug('Checking new cards.');
     // get cards list as separate method
     const newCards = await this.getNewCards();
     // forEach new card -> add a comment that work is started and move it to in_progress column
@@ -40,7 +40,7 @@ export class KaitenService {
       await this.processCard(card);
     }
     // increase lastCheckDate
-    this.lastCheckDate.setSeconds(this.lastCheckDate.getSeconds() + 10);
+    // this.lastCheckDate.setSeconds(this.lastCheckDate.getSeconds() + pollIntervalSecs);
   }
 
   private async wait(milliseconds) {
@@ -60,7 +60,7 @@ export class KaitenService {
           Authorization: `Bearer ${this.kaitenToken}`
         }
       }).toPromise();
-      this.logger.debug(`Moved ${card.title}`);
+      this.logger.debug(`Moved id: ${card.id}, title: ${card.title} (created at ${card.created})`);
     } catch (e) {
       this.logger.error(`Move card ${card.title} error ${JSON.stringify(e)}`);
       return;
@@ -74,10 +74,11 @@ export class KaitenService {
           Authorization: `Bearer ${this.kaitenToken}`
         }
       }).toPromise();
-      this.logger.debug(`Updated ${card.title}`);
+      this.logger.debug(`Updated id: ${card.id}, title: ${card.title} (created at ${card.created})`);
     } catch (e) {
       this.logger.error(`Add comment to card ${card.title} error: ${JSON.stringify(e)}`);
     }
+    await this.wait(1000);
   }
 
   private async getNewCards(): Promise<object[]> {
@@ -85,7 +86,7 @@ export class KaitenService {
     const params = {
       board_id: this.boardId,
       column_id: this.columnNames.IN_QUEUE,
-      created_after: this.lastCheckDate.toISOString()
+      // created_after: this.lastCheckDate.toISOString()
     };
     try {
       const allCards = await Promise.all(this.lanesIds.map(lane => this.httpService.get(url, {
