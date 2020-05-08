@@ -19,7 +19,6 @@ export class KaitenService {
   private readonly lanesIds;
   private readonly memberIds;
   private readonly kaitenToken;
-  // private lastCheckDate = new Date();
 
   constructor(private readonly configService: ConfigService, private readonly httpService: HttpService) {
     this.kaitenUrl = this.configService.get<string>('kaiten_url');
@@ -35,12 +34,11 @@ export class KaitenService {
     this.logger.debug('Checking new cards.');
     // get cards list as separate method
     const newCards = await this.getNewCards();
+    this.logger.debug(`Found ${newCards.length} new cards.`);
     // forEach new card -> add a comment that work is started and move it to in_progress column
     for (const card of newCards) {
       await this.processCard(card);
     }
-    // increase lastCheckDate
-    // this.lastCheckDate.setSeconds(this.lastCheckDate.getSeconds() + pollIntervalSecs);
   }
 
   private async wait(milliseconds) {
@@ -85,12 +83,15 @@ export class KaitenService {
     const url = `${this.kaitenUrl}/cards`;
     const params = {
       board_id: this.boardId,
-      column_id: this.columnNames.IN_QUEUE,
-      // created_after: this.lastCheckDate.toISOString()
+      column_id: this.columnNames.IN_QUEUE
     };
     try {
       const allCards = await Promise.all(this.lanesIds.map(lane => this.httpService.get(url, {
-        params: { ...params, lane_id: lane },
+        params: { ...params,
+          lane_id: lane,
+          limit: 300,
+          condition: 1 // 1 - on board 2 - archived TODO move to enum
+        },
         headers: {
           Authorization: `Bearer ${this.kaitenToken}`
         }
